@@ -1,5 +1,11 @@
 # Secure Information Storage REST API
 
+### Prerequisites
+
+* Install docker
+* Install docker-compose
+* Add your user to the "docker" group
+
 ### Project setup
 
 * Add `secure-storage.localhost` to your `/etc/hosts`: `127.0.0.1 secure-storage.localhost`
