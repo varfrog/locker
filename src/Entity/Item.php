@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use DateTime;
@@ -16,32 +18,37 @@ class Item
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      */
-    private $id;
+    private ?string $id;
 
     /**
      * @ORM\Column(type="text")
      */
-    private $data;
+    private string $data;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    private DateTimeInterface $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $updatedAt;
+    private ?DateTimeInterface $updatedAt;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="items")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user;
+    private ?User $user;
 
-    public function getId(): ?int
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+    }
+
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -63,23 +70,9 @@ class Item
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getUpdatedAt(): ?DateTimeInterface
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 
     /**
@@ -87,13 +80,7 @@ class Item
      */
     public function updateTimestampsOnPersist(): void
     {
-        if (null === $this->getUpdatedAt()) {
-            $this->setUpdatedAt(new DateTime('now'));
-        }
-
-        if (null === $this->getCreatedAt()) {
-            $this->setCreatedAt(new DateTime('now'));
-        }
+        $this->updatedAt = new DateTime();
     }
 
     /**
@@ -101,11 +88,7 @@ class Item
      */
     public function updatedTimestampsOnUpdate(): void
     {
-        $this->setUpdatedAt(new DateTime('now'));
-
-        if (null === $this->getCreatedAt()) {
-            $this->setCreatedAt(new DateTime('now'));
-        }
+        $this->updatedAt = new DateTime();
     }
 
     public function getUser(): ?User

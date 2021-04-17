@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Item;
-use App\Service\ItemService;
+use App\Service\ItemFactory;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,6 +16,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ItemController extends AbstractController
 {
+    public function __construct(private ObjectManager $objectManager)
+    {
+    }
+
     /**
      * @Route("/item", name="item_list", methods={"GET"})
      * @IsGranted("ROLE_USER")
@@ -25,7 +30,7 @@ class ItemController extends AbstractController
 
         $allItems = [];
         foreach ($items as $item) {
-            $oneItem['id'] = $item->getId();
+            $oneItem['id'] = $item->getId(); // todo do not expose the auto-increment id to avoid guessing by iteration
             $oneItem['data'] = $item->getData();
             $oneItem['created_at'] = $item->getCreatedAt();
             $oneItem['updated_at'] = $item->getUpdatedAt();
@@ -39,7 +44,7 @@ class ItemController extends AbstractController
      * @Route("/item", name="item_create", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
-    public function create(Request $request, ItemService $itemService)
+    public function create(Request $request, ItemFactory $itemService)
     {
         $data = $request->get('data');
 
