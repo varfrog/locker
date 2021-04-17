@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Functional;
 
 use App\Repository\ItemRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ItemControllerTest extends WebTestCase

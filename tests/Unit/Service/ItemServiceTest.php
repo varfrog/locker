@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Unit;
+namespace App\Tests\Unit\Service;
 
 use App\Entity\Item;
 use App\Entity\User;
@@ -11,10 +11,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class ItemServiceTest extends TestCase
 {
-    /**
-     * @var EntityManagerInterface|MockObject
-     */
-    private $entityManager;
+    private EntityManagerInterface|MockObject $entityManager;
 
     /**
      * @var ItemService

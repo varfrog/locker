@@ -1,5 +1,15 @@
 /docker/mysql/data/
 /.idea/
+###> symfony/phpunit-bridge ###
+.phpunit
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> squizlabs/php_codesniffer ###
+/.phpcs-cache
+/phpcs.xml
+###< squizlabs/php_codesniffer ###
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -10,9 +20,3 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
-
-###> symfony/phpunit-bridge ###
-.phpunit
-.phpunit.result.cache
-/phpunit.xml
-###< symfony/phpunit-bridge ###
