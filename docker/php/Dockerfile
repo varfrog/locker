@@ -1,4 +1,4 @@
-FROM php:7.4-fpm
+FROM php:8.0-fpm
 
 RUN apt-get update -yqq && \
     apt-get install -yqq \
@@ -9,7 +9,8 @@ RUN apt-get update -yqq && \
     gzip \
     libzip-dev \
     libicu-dev \
-    nano
+    vim \
+    bash
 
 RUN docker-php-ext-configure intl 
 

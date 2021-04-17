@@ -19,3 +19,6 @@ build:
 
 tests:
 	docker-compose exec php php vendor/bin/simple-phpunit
+
+enter:
+	docker exec -it securestorage_php bash
