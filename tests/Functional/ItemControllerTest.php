@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional;
 
+use App\Entity\User;
 use App\Service\UserFactory;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -34,7 +35,7 @@ class ItemControllerTest extends WebTestCase
     {
         $this->createUserAndLogin();
 
-        $secretText = 'Moses had the first tablet that could connect to the cloud';
+        $secretText = 'I am in an open marriage. I just learned.';
         $this->client->request('POST', '/item', ['data' => $secretText]);
         $this->assertResponseIsSuccessful();
 
@@ -49,7 +50,7 @@ class ItemControllerTest extends WebTestCase
         $this->createUserAndLogin();
 
         $secretText1 = 'Epstein is like a full garbage bag. It’s not gonna take itself out.';
-        $secretText2 = 'Why did the programmer need glasses? He couldn’t C#.';
+        $secretText2 = 'Moses had the first tablet that could connect to the cloud.';
         $this->client->request('POST', '/item', ['data' => $secretText1]);
         $this->client->request('POST', '/item', ['data' => $secretText2]);
 
@@ -77,12 +78,47 @@ class ItemControllerTest extends WebTestCase
         $this->assertSame($secretText2, $response[1]['data']);
     }
 
-    private function createUserAndLogin(): void
+    public function testDelete()
     {
-        $user = $this->userFactory->createUser('joe', 'pass');
+        $this->createUserAndLogin();
+        $this->client->request('POST', '/item', ['data' => 'Why did the programmer need glasses? He couldn’t C#']);
+
+        $this->client->request('GET', '/item');
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('id', $response[0]);
+
+        $this->client->request('DELETE', '/item/' . $response[0]['id']);
+
+        $this->client->request('GET', '/item');
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertCount(0, $response);
+    }
+
+    public function testDeleteAnotherUsersItem()
+    {
+        $this->createUserAndLogin('bob');
+        $this->client->request('POST', '/item', ['data' => 'If being hot was a crime, I\'d be a clean man.']);
+
+        $this->client->request('GET', '/item');
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('id', $response[0]);
+
+        $this->createUserAndLogin('evil_maid');
+        $this->client->request('DELETE', '/item/' . $response[0]['id']);
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    private function createUserAndLogin(string $username = 'joe'): void
+    {
+        $this->client->loginUser($this->createUser($username));
+    }
+
+    private function createUser(string $username): User
+    {
+        $user = $this->userFactory->createUser($username, 'pass');
         $this->objectManager->persist($user);
         $this->objectManager->flush();
 
-        $this->client->loginUser($user);
+        return $user;
     }
 }

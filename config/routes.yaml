@@ -7,3 +7,10 @@ app.item.create:
     path: /item
     defaults: { _controller: app.controller.item_controller::create }
     methods: POST
+
+app.item.delete:
+    path: /item/{id}
+    defaults: { _controller: app.controller.item_controller::delete }
+    methods: DELETE
+    requirements:
+        id: '\d+'

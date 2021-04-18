@@ -19,4 +19,9 @@ class ItemRepository extends EntityRepository
     {
         return $this->findBy(['user' => $user]);
     }
+
+    public function findOneById(int $id): ?Item
+    {
+        return $this->findOneBy(['id' => $id]);
+    }
 }

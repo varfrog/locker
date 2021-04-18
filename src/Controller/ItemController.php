@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Item;
 use App\Entity\User;
 use App\Repository\ItemRepository;
 use App\Service\DecryptingItemSerializer;
@@ -12,12 +11,10 @@ use App\Service\ItemFactory;
 use App\Service\TokenToUserResolver;
 use Doctrine\Persistence\ObjectManager;
 use ParagonIE\HiddenString\HiddenString;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\Routing\Annotation\Route;
 
 class ItemController
 {
@@ -55,27 +52,22 @@ class ItemController
         return new JsonResponse($this->decryptingItemSerializer->serialize($item));
     }
 
-    /**
-     * @Route("/item/{id}", name="items_delete", methods={"DELETE"})
-     * @IsGranted("ROLE_USER")
-     */
-    public function delete(Request $request, int $id)
+    public function delete(int $id)
     {
-        if (empty($id)) {
-            return $this->json(['error' => 'No data parameter'], Response::HTTP_BAD_REQUEST);
-        }
+        $item = $this->itemRepository->findOneById($id);
 
-        $item = $this->getDoctrine()->getRepository(Item::class)->find($id);
-
+        $noItemResponse = new JsonResponse(['error' => 'No item'], Response::HTTP_BAD_REQUEST);
         if ($item === null) {
-            return $this->json(['error' => 'No item'], Response::HTTP_BAD_REQUEST);
+            return $noItemResponse;
+        }
+        if ($item->getUser() !== $this->tokenToUserResolver->resolveUser()) {
+            return $noItemResponse; // Not a 403 in order to not reveal that there is an item here.
         }
 
-        $manager = $this->getDoctrine()->getManager();
-        $manager->remove($item);
-        $manager->flush();
+        $this->objectManager->remove($item);
+        $this->objectManager->flush();
 
-        return $this->json([]);
+        return new JsonResponse(); // Should be a 204 (No Content)
     }
 
     /**
