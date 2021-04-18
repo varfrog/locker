@@ -6,4 +6,5 @@ services:
             - '@app.repository.item_repository'
             - '@app.service.token_to_user_resolver'
             - '@app.service.item_factory'
+            - '@app.service.decrypting_item_serializer'
         public: true

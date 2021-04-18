@@ -26,3 +26,8 @@ services:
         arguments:
             - '@security.token_storage'
             - '@app.repository.user_repository'
+
+    app.service.decrypting_item_serializer:
+        class: App\Service\DecryptingItemSerializer
+        arguments:
+            - '@app.service.crypter'

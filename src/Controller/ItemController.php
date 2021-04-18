@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Item;
 use App\Entity\User;
 use App\Repository\ItemRepository;
+use App\Service\DecryptingItemSerializer;
 use App\Service\ItemFactory;
 use App\Service\TokenToUserResolver;
 use Doctrine\Persistence\ObjectManager;
@@ -24,21 +25,16 @@ class ItemController
         private ObjectManager $objectManager,
         private ItemRepository $itemRepository,
         private TokenToUserResolver $tokenToUserResolver,
-        private ItemFactory $itemFactory
+        private ItemFactory $itemFactory,
+        private DecryptingItemSerializer $decryptingItemSerializer
     ) {
     }
 
     public function list(): JsonResponse
     {
         $result = [];
-        foreach ($this->itemRepository->findByUser($this->resolveUser()) as $item) {
-            // todo call mapper, the same as in create()
-            $result[] = [
-                'id' => $item->getId(), // todo do not expose the auto-increment id to avoid guessing by iteration,
-                'data' => $item->getData(),
-                'created_at' => $item->getCreatedAt(),
-                'updated_at' => $item->getUpdatedAt(),
-            ];
+        foreach ($this->itemRepository->findByUser($this->resolveUserWithCheck()) as $item) {
+            $result[] = $this->decryptingItemSerializer->serialize($item);
         }
 
         return new JsonResponse($result);
@@ -46,15 +42,17 @@ class ItemController
 
     public function create(Request $request)
     {
+        $user = $this->resolveUserWithCheck();
+
         $data = $request->get('data');
         if ($data === null) {
             return new JsonResponse(['error' => 'No data parameter']);
         }
 
-        $item = $this->itemFactory->create($this->resolveUser(), new HiddenString($data));
+        $item = $this->itemFactory->create($user, new HiddenString($data));
         $this->objectManager->flush();
 
-        return new JsonResponse(); // todo call a mapper
+        return new JsonResponse($this->decryptingItemSerializer->serialize($item));
     }
 
     /**
@@ -80,7 +78,12 @@ class ItemController
         return $this->json([]);
     }
 
-    private function resolveUser(): User
+    /**
+     * @return User
+     *
+     * @throws AccessDeniedHttpException
+     */
+    private function resolveUserWithCheck(): User
     {
         $user = $this->tokenToUserResolver->resolveUser();
         if ($user === null) {
