@@ -16,7 +16,7 @@ init:
 	docker-compose exec php php bin/console app:dump-encryption-key
 
 tests:
-	docker-compose exec php php bin/console --env=test doctrine:database:create
+	docker-compose exec php php bin/console --env=test doctrine:database:create --if-not-exists
 	docker-compose exec php php bin/console --env=test doctrine:migrations:migrate --no-interaction
 	docker-compose exec php php vendor/bin/simple-phpunit
 
