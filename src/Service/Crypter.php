@@ -25,7 +25,7 @@ class Crypter
      *
      * @throws CrypterException
      */
-    public function encrypt(string $data): string
+    public function encrypt(string $data): string // todo use HiddenData here
     {
         try {
             return Crypto::encrypt(new HiddenString($data), $this->encryptionKeyProvider->getKey());

@@ -1,22 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
-use App\Entity\Token;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class UserFixture extends Fixture
+class UserFixtures extends Fixture
 {
-    protected $encoder;
-
-    public function __construct(UserPasswordEncoderInterface $encoder)
+    public function __construct(private UserPasswordEncoderInterface $encoder)
     {
-        $this->encoder = $encoder;
     }
-
 
     public function load(ObjectManager $manager)
     {

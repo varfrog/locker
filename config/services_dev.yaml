@@ -1,0 +1,7 @@
+services:
+    app.data_fixtures.user_fixtures:
+        class: App\DataFixtures\UserFixtures
+        arguments:
+            [ '@security.password_encoder' ]
+        tags:
+            - { name: doctrine.fixture.orm }
