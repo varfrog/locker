@@ -10,6 +10,9 @@ use ParagonIE\HiddenString\HiddenString;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \App\Service\EncryptionKeyProvider
+ */
 class CrypterTest extends TestCase
 {
     private Crypter $crypter;

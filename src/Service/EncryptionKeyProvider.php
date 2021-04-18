@@ -9,14 +9,15 @@ use ParagonIE\Halite\Symmetric\EncryptionKey;
 
 class EncryptionKeyProvider
 {
-    public function __construct(
-        private string $encryptionKeyPath
-    ) {
+    private EncryptionKey $encryptionKey;
+
+    public function __construct(string $encryptionKeyPath)
+    {
+        $this->encryptionKey = KeyFactory::loadEncryptionKey($encryptionKeyPath);
     }
 
     public function getKey(): EncryptionKey
     {
-        // todo: load this in __constructor, keep as a HiddenString, to avoid loading every time
-        return KeyFactory::loadEncryptionKey($this->encryptionKeyPath);
+        return $this->encryptionKey;
     }
 }
