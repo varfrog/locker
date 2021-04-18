@@ -26,7 +26,7 @@ class DumpEncryptionKeyCommand extends Command
         if (file_exists($this->encryptionKeyPath)) {
             $symfonyStyle->warning('File at this path exists - refusing to override to avoid losing the existing key.');
 
-            return Command::FAILURE;
+            return Command::SUCCESS;
         }
 
         KeyFactory::save(KeyFactory::generateEncryptionKey(), $this->encryptionKeyPath);

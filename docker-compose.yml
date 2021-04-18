@@ -32,7 +32,7 @@ services:
             -   mysql
 
     nginx:
-        image: nginx:1.15.0
+        image: nginx:1.19.0
         ports:
             - 127.0.0.1:${NGINX_PORT}:80
         volumes:
