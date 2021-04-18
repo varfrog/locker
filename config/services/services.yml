@@ -8,3 +8,21 @@ services:
         class: App\Service\EncryptionKeyProvider
         arguments:
             - '%app.encryption_key_path%'
+
+    app.service.user_factory:
+        class: App\Service\UserFactory
+        arguments:
+            - '@security.password_encoder'
+        public: true
+
+    app.service.item_factory:
+        class: App\Service\ItemFactory
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@app.service.crypter'
+
+    app.service.token_to_user_resolver:
+        class: App\Service\TokenToUserResolver
+        arguments:
+            - '@security.token_storage'
+            - '@app.repository.user_repository'

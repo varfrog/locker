@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\User;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityRepository;
 
-class UserRepository extends ServiceEntityRepository
+class UserRepository extends EntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function findOneByUsername(string $username): ?User
     {
-        parent::__construct($registry, User::class);
+        /** @var User? $user */
+        $user = $this->findOneBy(['username' => $username]);
+
+        return $user;
     }
 }

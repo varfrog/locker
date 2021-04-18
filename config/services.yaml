@@ -8,15 +8,3 @@ services:
     _defaults:
         autowire: false
         autoconfigure: false
-
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
-            - '../src/Tests/'
-
-    App\Controller\:
-        resource: '../src/Controller/'
-        tags: ['controller.service_arguments']

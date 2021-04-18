@@ -1,0 +1,9 @@
+services:
+    app.controller.item_controller:
+        class: App\Controller\ItemController
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@app.repository.item_repository'
+            - '@app.service.token_to_user_resolver'
+            - '@app.service.item_factory'
+        public: true

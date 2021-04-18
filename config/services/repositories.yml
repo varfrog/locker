@@ -1,0 +1,13 @@
+services:
+    app.repository.item_repository:
+        class: App\Repository\ItemRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments: ['\App\Entity\Item']
+        lazy: true
+
+    app.repository.user_repository:
+        class: App\Repository\UserRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments: ['\App\Entity\User']
+        lazy: true
+

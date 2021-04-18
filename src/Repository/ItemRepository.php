@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Item;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\User;
+use Doctrine\ORM\EntityRepository;
 
-class ItemRepository extends ServiceEntityRepository
+class ItemRepository extends EntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @param User $user
+     *
+     * @return Item[]
+     */
+    public function findByUser(User $user): array
     {
-        parent::__construct($registry, Item::class);
+        return $this->findBy(['user' => $user]);
     }
 }

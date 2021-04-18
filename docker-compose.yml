@@ -11,6 +11,17 @@ services:
             MYSQL_DB_NAME: ${MYSQL_DB_NAME}
         container_name: securestorage_mysql
 
+    mysql_test:
+        image: mysql:5.7
+        volumes:
+            - ./docker/mysql/data_test:/var/lib/mysql
+        ports:
+            - 127.0.0.1:${MYSQL_PORT_TEST}:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # Use a non-root user
+            MYSQL_DB_NAME: ${MYSQL_DB_NAME}
+        container_name: securestorage_mysql_test
+
     php:
         build: docker/php
         volumes:

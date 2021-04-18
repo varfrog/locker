@@ -7,18 +7,21 @@ namespace App\Service;
 use App\Entity\Item;
 use App\Entity\User;
 use Doctrine\Persistence\ObjectManager;
+use ParagonIE\HiddenString\HiddenString;
 
 class ItemFactory
 {
-    public function __construct(private ObjectManager $objectManager)
-    {
+    public function __construct(
+        private ObjectManager $objectManager,
+        private Crypter $crypter
+    ) {
     }
 
-    public function create(User $user, string $data): Item
+    public function create(User $user, HiddenString $dataInPlainText): Item
     {
         $item = (new Item())
             ->setUser($user)
-            ->setData($data)
+            ->setData($this->crypter->encrypt($dataInPlainText->getString()))
         ;
         $this->objectManager->persist($item);
 

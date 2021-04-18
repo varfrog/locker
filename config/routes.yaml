@@ -1,3 +1,9 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+app.item.list:
+    path: /item
+    defaults: { _controller: app.controller.item_controller::list }
+    methods: GET
+
+app.item.create:
+    path: /item
+    defaults: { _controller: app.controller.item_controller::create }
+    methods: POST

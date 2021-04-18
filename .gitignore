@@ -1,4 +1,5 @@
 /docker/mysql/data/
+/docker/mysql/data_test/
 /.idea/
 /config/keys/
 

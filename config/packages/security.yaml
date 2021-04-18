@@ -20,3 +20,6 @@ security:
     encoders:
         App\Entity\User:
             algorithm: bcrypt
+
+    access_control:
+        - { path: '^/item', roles: ROLE_USER }

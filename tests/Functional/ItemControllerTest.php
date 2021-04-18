@@ -1,36 +1,52 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Functional;
 
-use App\Repository\ItemRepository;
+use App\Service\UserFactory;
+use Doctrine\Persistence\ObjectManager;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 
 class ItemControllerTest extends WebTestCase
 {
+    private KernelBrowser $client;
+    private ObjectManager $objectManager;
+    private UserFactory $userFactory;
+
+    public function setUp(): void
+    {
+        $this->client = static::createClient();
+        $container = $this->client->getContainer();
+
+        /** @var ObjectManager $entityManager */
+        $entityManager = $container->get('doctrine.orm.default_entity_manager');
+
+        /** @var UserFactory $userFactory */
+        $userFactory = $container->get('app.service.user_factory');
+
+        $this->objectManager = $entityManager;
+        $this->userFactory = $userFactory;
+    }
+
     public function testCreate()
     {
-        $client = static::createClient();
+        $user = $this->userFactory->createUser('joe', 'pass');
+        $this->objectManager->persist($user);
+        $this->objectManager->flush();
 
-        $userRepository = static::$container->get(UserRepository::class);
-        $itemRepository = static::$container->get(ItemRepository::class);
-        $entityManager = static::$container->get(EntityManagerInterface::class);
+        $this->client->loginUser($user);
+        $data = 'Moses had the first tablet that could connect to the cloud';
 
-        $user = $userRepository->findOneByUsername('john');
-
-        $client->loginUser($user);
-        
-        $data = 'very secure new item data';
-
-        $newItemData = ['data' => $data];
-
-        $client->request('POST', '/item', $newItemData);
-        $client->request('GET', '/item');
+        $this->client->request('POST', '/item', ['data' => $data]);
 
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('very secure new item data', $client->getResponse()->getContent());
+        $this->assertStringContainsString($data, $this->client->getResponse()->getContent()); // todo check for array key
+    }
 
-        $userRepository->findOneByData($data);
+    public function testList()
+    {
+
     }
 }

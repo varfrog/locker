@@ -5,56 +5,56 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Item;
+use App\Entity\User;
+use App\Repository\ItemRepository;
 use App\Service\ItemFactory;
+use App\Service\TokenToUserResolver;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use ParagonIE\HiddenString\HiddenString;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
-class ItemController extends AbstractController
+class ItemController
 {
-    public function __construct(private ObjectManager $objectManager)
-    {
+    public function __construct(
+        private ObjectManager $objectManager,
+        private ItemRepository $itemRepository,
+        private TokenToUserResolver $tokenToUserResolver,
+        private ItemFactory $itemFactory
+    ) {
     }
 
-    /**
-     * @Route("/item", name="item_list", methods={"GET"})
-     * @IsGranted("ROLE_USER")
-     */
     public function list(): JsonResponse
     {
-        $items = $this->getDoctrine()->getRepository(Item::class)->findBy(['user' => $this->getUser()]);
-
-        $allItems = [];
-        foreach ($items as $item) {
-            $oneItem['id'] = $item->getId(); // todo do not expose the auto-increment id to avoid guessing by iteration
-            $oneItem['data'] = $item->getData();
-            $oneItem['created_at'] = $item->getCreatedAt();
-            $oneItem['updated_at'] = $item->getUpdatedAt();
-            $allItems[] = $oneItem;
+        $result = [];
+        foreach ($this->itemRepository->findByUser($this->resolveUser()) as $item) {
+            // todo call mapper, the same as in create()
+            $result[] = [
+                'id' => $item->getId(), // todo do not expose the auto-increment id to avoid guessing by iteration,
+                'data' => $item->getData(),
+                'created_at' => $item->getCreatedAt(),
+                'updated_at' => $item->getUpdatedAt(),
+            ];
         }
 
-        return $this->json($allItems);
+        return new JsonResponse($result);
     }
 
-    /**
-     * @Route("/item", name="item_create", methods={"POST"})
-     * @IsGranted("ROLE_USER")
-     */
-    public function create(Request $request, ItemFactory $itemService)
+    public function create(Request $request)
     {
         $data = $request->get('data');
-
-        if (empty($data)) {
-            return $this->json(['error' => 'No data parameter']);
+        if ($data === null) {
+            return new JsonResponse(['error' => 'No data parameter']);
         }
 
-        $itemService->create($this->getUser(), $data);
+        $item = $this->itemFactory->create($this->resolveUser(), new HiddenString($data));
+        $this->objectManager->flush();
 
-        return $this->json([]);
+        return new JsonResponse(); // todo call a mapper
     }
 
     /**
@@ -78,5 +78,15 @@ class ItemController extends AbstractController
         $manager->flush();
 
         return $this->json([]);
+    }
+
+    private function resolveUser(): User
+    {
+        $user = $this->tokenToUserResolver->resolveUser();
+        if ($user === null) {
+            throw new AccessDeniedHttpException('Access denied');
+        }
+
+        return $user;
     }
 }
