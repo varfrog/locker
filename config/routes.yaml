@@ -1,3 +1,12 @@
+app.login:
+    path: /login
+    defaults: { _controller: app.controller.security_controller::login }
+    methods: POST
+
+app.logout:
+    path: /logout
+    methods: POST
+
 app.item.list:
     path: /item
     defaults: { _controller: app.controller.item_controller::list }

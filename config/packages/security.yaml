@@ -13,7 +13,7 @@ security:
             lazy: true
             provider: app_user_provider
             logout:
-                path: logout
+                path: app.logout
             json_login:
                 check_path: /login
 

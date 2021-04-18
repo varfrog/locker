@@ -1,30 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\TokenToUserResolver;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
 
-class SecurityController extends AbstractController
+class SecurityController
 {
-    /**
-     * @Route("/login", name="login", methods={"POST"})
-     */
+    public function __construct(private TokenToUserResolver $tokenToUserResolver)
+    {
+    }
+
     public function login(): JsonResponse
     {
-        $user = $this->getUser();
+        $user = $this->tokenToUserResolver->resolveUser();
 
-        return $this->json([
+        return new JsonResponse([
             'username' => $user->getUsername(),
             'roles' => $user->getRoles(),
         ]);
-    }
-
-    /**
-     * @Route("/logout", name="logout", methods={"POST"})
-     */
-    public function logout()
-    {
     }
 }

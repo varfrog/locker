@@ -9,3 +9,9 @@ services:
             - '@app.service.decrypting_item_serializer'
             - '@app.service.item_updater'
         public: true
+
+    app.controller.security_controller:
+        class: App\Controller\SecurityController
+        arguments:
+            - '@app.service.token_to_user_resolver'
+        public: true
