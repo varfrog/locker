@@ -9,12 +9,13 @@ RUN apt-get update -yqq && \
     gzip \
     libzip-dev \
     libicu-dev \
+    libsodium-dev \
     vim \
     bash
 
 RUN docker-php-ext-configure intl 
 
-RUN docker-php-ext-install intl pdo pdo_mysql zip opcache bcmath sockets
+RUN docker-php-ext-install intl pdo pdo_mysql zip opcache bcmath sockets sodium
 
 RUN pecl install xdebug && docker-php-ext-enable xdebug opcache
 

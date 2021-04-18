@@ -1,4 +1,4 @@
-.PHONY: start stop init tests enter
+.PHONY: start stop init tests enter generate-encryption-key
 
 start:
 	docker-compose up -d
@@ -13,6 +13,7 @@ init:
 	docker-compose exec php php bin/console doctrine:database:create --if-not-exists
 	docker-compose exec php php bin/console doctrine:migrations:migrate --no-interaction
 	docker-compose exec php php bin/console doctrine:fixtures:load --no-interaction
+	docker-compose exec php php bin/console app:dump-encryption-key
 
 tests:
 	docker-compose exec php php vendor/bin/simple-phpunit

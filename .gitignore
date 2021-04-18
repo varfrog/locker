@@ -1,5 +1,7 @@
 /docker/mysql/data/
 /.idea/
+/config/keys/
+
 ###> symfony/phpunit-bridge ###
 .phpunit
 .phpunit.result.cache

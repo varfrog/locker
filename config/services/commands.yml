@@ -1,0 +1,7 @@
+services:
+    app.command.dump_encryption_key_command:
+        class: App\Command\DumpEncryptionKeyCommand
+        arguments:
+            - '%app.encryption_key_path%'
+        tags:
+            - { name: console.command }

@@ -1,0 +1,10 @@
+services:
+    app.service.crypter:
+        class: App\Service\Crypter
+        arguments:
+            - '@app.service.encryption_key_provider'
+
+    app.service.encryption_key_provider:
+        class: App\Service\EncryptionKeyProvider
+        arguments:
+            - '%app.encryption_key_path%'

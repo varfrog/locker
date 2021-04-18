@@ -103,6 +103,18 @@
     "laminas/laminas-zendframework-bridge": {
         "version": "1.2.0"
     },
+    "paragonie/constant_time_encoding": {
+        "version": "v2.4.0"
+    },
+    "paragonie/halite": {
+        "version": "v4.7.1"
+    },
+    "paragonie/hidden-string": {
+        "version": "v2.0.0"
+    },
+    "paragonie/sodium_compat": {
+        "version": "v1.15.4"
+    },
     "sensio/framework-extra-bundle": {
         "version": "5.2",
         "recipe": {
