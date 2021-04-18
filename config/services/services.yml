@@ -31,3 +31,8 @@ services:
         class: App\Service\DecryptingItemSerializer
         arguments:
             - '@app.service.crypter'
+
+    app.service.item_updater:
+        class: App\Service\ItemUpdater
+        arguments:
+            - '@app.service.crypter'

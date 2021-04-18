@@ -85,6 +85,9 @@ class ItemControllerTest extends WebTestCase
 
         $this->client->request('GET', '/item');
         $response = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertIsArray($response);
+        $this->assertCount(1, $response);
+        $this->assertIsArray($response[0]);
         $this->assertArrayHasKey('id', $response[0]);
 
         $this->client->request('DELETE', '/item/' . $response[0]['id']);
@@ -101,9 +104,60 @@ class ItemControllerTest extends WebTestCase
 
         $this->client->request('GET', '/item');
         $response = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertIsArray($response);
+        $this->assertCount(1, $response);
+        $this->assertIsArray($response[0]);
         $this->assertArrayHasKey('id', $response[0]);
 
         $this->createUserAndLogin('evil_maid');
+        $this->client->request('DELETE', '/item/' . $response[0]['id']);
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    public function testUpdate()
+    {
+        $secretText1 = 'My music teacher got electrocuted yesterday.';
+        $secretText2 = 'Unfortunately he was a great conductor.';
+
+        $this->createUserAndLogin();
+        $this->client->request('POST', '/item', ['data' => $secretText1]);
+
+        $this->client->request('GET', '/item');
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertIsArray($response);
+        $this->assertCount(1, $response);
+        $this->assertIsArray($response[0]);
+        $this->assertArrayHasKey('id', $response[0]);
+        $itemId = $response[0]['id'];
+
+        $this->client->request('PUT', '/item/' . $itemId, ['data' => $secretText2]);
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertIsArray($response);
+        $this->assertArrayHasKey('data', $response);
+        $this->assertSame($secretText2, $response['data']);
+
+        $this->client->request('GET', '/item');
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertIsArray($response);
+        $this->assertCount(1, $response);
+        $this->assertIsArray($response[0]);
+        $this->assertArrayHasKey('data', $response[0]);
+        $this->assertSame($secretText2, $response[0]['data']);
+    }
+
+    public function testUpdateAnotherUsersItem()
+    {
+        $this->createUserAndLogin('bob');
+        $this->client->request('POST', '/item', ['data' => 'Pizza jokes are too cheesy.']);
+
+        $this->client->request('GET', '/item');
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertIsArray($response);
+        $this->assertCount(1, $response);
+        $this->assertIsArray($response[0]);
+        $this->assertArrayHasKey('id', $response[0]);
+
+        $this->createUserAndLogin('rogue_individual');
         $this->client->request('DELETE', '/item/' . $response[0]['id']);
         $this->assertResponseStatusCodeSame(400);
     }

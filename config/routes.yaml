@@ -14,3 +14,10 @@ app.item.delete:
     methods: DELETE
     requirements:
         id: '\d+'
+
+app.item.update:
+    path: /item/{id}
+    defaults: { _controller: app.controller.item_controller::update }
+    methods: PUT
+    requirements:
+        id: '\d+'

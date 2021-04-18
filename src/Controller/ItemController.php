@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Item;
 use App\Entity\User;
 use App\Repository\ItemRepository;
 use App\Service\DecryptingItemSerializer;
 use App\Service\ItemFactory;
+use App\Service\ItemUpdater;
 use App\Service\TokenToUserResolver;
 use Doctrine\Persistence\ObjectManager;
 use ParagonIE\HiddenString\HiddenString;
@@ -23,7 +25,8 @@ class ItemController
         private ItemRepository $itemRepository,
         private TokenToUserResolver $tokenToUserResolver,
         private ItemFactory $itemFactory,
-        private DecryptingItemSerializer $decryptingItemSerializer
+        private DecryptingItemSerializer $decryptingItemSerializer,
+        private ItemUpdater $itemUpdater
     ) {
     }
 
@@ -43,31 +46,46 @@ class ItemController
 
         $data = $request->get('data');
         if ($data === null) {
-            return new JsonResponse(['error' => 'No data parameter']);
+            return $this->buildMissingDataResponse();
         }
 
         $item = $this->itemFactory->create($user, new HiddenString($data));
         $this->objectManager->flush();
 
-        return new JsonResponse($this->decryptingItemSerializer->serialize($item));
+        return $this->buildItemResponse($item);
     }
 
     public function delete(int $id)
     {
         $item = $this->itemRepository->findOneById($id);
-
-        $noItemResponse = new JsonResponse(['error' => 'No item'], Response::HTTP_BAD_REQUEST);
-        if ($item === null) {
-            return $noItemResponse;
-        }
-        if ($item->getUser() !== $this->tokenToUserResolver->resolveUser()) {
-            return $noItemResponse; // Not a 403 in order to not reveal that there is an item here.
+        if ($item === null || $item->getUser() !== $this->tokenToUserResolver->resolveUser()) {
+            // Same status for both not found and forbidden to protect against guessing.
+            return $this->buildItemNotFoundResponse();
         }
 
         $this->objectManager->remove($item);
         $this->objectManager->flush();
 
         return new JsonResponse(); // Should be a 204 (No Content)
+    }
+
+    public function update(Request $request, int $id)
+    {
+        $item = $this->itemRepository->findOneById($id);
+        if ($item === null || $item->getUser() !== $this->tokenToUserResolver->resolveUser()) {
+            // Same status for both not found and forbidden to protect against guessing.
+            return $this->buildItemNotFoundResponse();
+        }
+
+        $data = $request->get('data');
+        if ($data === null) {
+            return $this->buildMissingDataResponse();
+        }
+
+        $this->itemUpdater->updateItem($item, new HiddenString($data));
+        $this->objectManager->flush();
+
+        return $this->buildItemResponse($item);
     }
 
     /**
@@ -83,5 +101,20 @@ class ItemController
         }
 
         return $user;
+    }
+
+    private function buildItemNotFoundResponse(): JsonResponse
+    {
+        return new JsonResponse(['error' => 'No item'], Response::HTTP_BAD_REQUEST);
+    }
+
+    private function buildMissingDataResponse(): JsonResponse
+    {
+        return new JsonResponse(['error' => 'No data parameter']);
+    }
+
+    private function buildItemResponse(Item $item): JsonResponse
+    {
+        return new JsonResponse($this->decryptingItemSerializer->serialize($item));
     }
 }

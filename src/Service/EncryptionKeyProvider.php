@@ -16,6 +16,7 @@ class EncryptionKeyProvider
 
     public function getKey(): EncryptionKey
     {
+        // todo: load this in __constructor, keep as a HiddenString, to avoid loading every time
         return KeyFactory::loadEncryptionKey($this->encryptionKeyPath);
     }
 }
