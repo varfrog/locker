@@ -19,16 +19,16 @@ class Crypter
     }
 
     /**
-     * @param string $data
+     * @param HiddenString $dataInPlainText
      *
      * @return string
      *
      * @throws CrypterException
      */
-    public function encrypt(string $data): string // todo use HiddenData here
+    public function encrypt(HiddenString $dataInPlainText): string
     {
         try {
-            return Crypto::encrypt(new HiddenString($data), $this->encryptionKeyProvider->getKey());
+            return Crypto::encrypt($dataInPlainText, $this->encryptionKeyProvider->getKey());
         } catch (SodiumException | HaliteAlert $exception) {
             throw new CrypterException('Cannot encrypt', 0, $exception);
         }

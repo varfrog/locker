@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Service;
 
 use App\Service\Crypter;
 use App\Service\EncryptionKeyProvider;
+use ParagonIE\HiddenString\HiddenString;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -24,7 +25,7 @@ class CrypterTest extends TestCase
     {
         $text = 'Foo bar baz house';
 
-        $encryptedString = $this->crypter->encrypt($text);
+        $encryptedString = $this->crypter->encrypt(new HiddenString($text));
         $decryptedString = $this->crypter->decrypt($encryptedString);
 
         self::assertNotSame($text, $encryptedString);
@@ -33,7 +34,10 @@ class CrypterTest extends TestCase
 
     public function testDifferentResultsForDifferentStrings()
     {
-        self::assertNotSame($this->crypter->encrypt('foo'), $this->crypter->encrypt('bar'));
+        self::assertNotSame(
+            $this->crypter->encrypt(new HiddenString('foo')),
+            $this->crypter->encrypt(new HiddenString('bar'))
+        );
     }
 
     private function getResourcePath(string $filename): string

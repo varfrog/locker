@@ -21,7 +21,7 @@ class ItemFactory
     {
         $item = (new Item())
             ->setUser($user)
-            ->setData($this->crypter->encrypt($dataInPlainText->getString()))
+            ->setData($this->crypter->encrypt($dataInPlainText))
         ;
         $this->objectManager->persist($item);
 
