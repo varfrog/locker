@@ -15,7 +15,7 @@ class DecryptingItemSerializer
     public function serialize(Item $item): array
     {
         return [
-            'id' => $item->getId(), // we should not expose the auto-increment id to avoid guessing by iteration
+            'id' => (int)$item->getId(), // we should not expose the auto-increment id to avoid guessing by iteration
             'data' => $this->crypter->decrypt($item->getData()),
             'created_at' => $item->getCreatedAt(),
             'updated_at' => $item->getUpdatedAt(),

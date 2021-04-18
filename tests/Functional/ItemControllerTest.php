@@ -130,7 +130,7 @@ class ItemControllerTest extends WebTestCase
         $this->assertArrayHasKey('id', $response[0]);
         $itemId = $response[0]['id'];
 
-        $this->client->request('PUT', '/item/' . $itemId, ['data' => $secretText2]);
+        $this->client->request('PUT', '/item', ['id' => $itemId, 'data' => $secretText2]);
         $response = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertIsArray($response);
         $this->assertArrayHasKey('data', $response);
@@ -156,9 +156,10 @@ class ItemControllerTest extends WebTestCase
         $this->assertCount(1, $response);
         $this->assertIsArray($response[0]);
         $this->assertArrayHasKey('id', $response[0]);
+        $itemId = $response[0]['id'];
 
         $this->createUserAndLogin('rogue_individual');
-        $this->client->request('DELETE', '/item/' . $response[0]['id']);
+        $this->client->request('PUT', '/item', ['id' => $itemId, 'data' => 'foo']);
         $this->assertResponseStatusCodeSame(400);
     }
 

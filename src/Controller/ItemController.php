@@ -69,17 +69,22 @@ class ItemController
         return new JsonResponse(); // Should be a 204 (No Content)
     }
 
-    public function update(Request $request, int $id)
+    public function update(Request $request)
     {
-        $item = $this->itemRepository->findOneById($id);
-        if ($item === null || $item->getUser() !== $this->tokenToUserResolver->resolveUser()) {
-            // Same status for both not found and forbidden to protect against guessing.
-            return $this->buildItemNotFoundResponse();
+        $id = $request->get('id');
+        if ($id === null) {
+            return new JsonResponse(['error' => 'No id parameter']);
         }
 
         $data = $request->get('data');
         if ($data === null) {
             return $this->buildMissingDataResponse();
+        }
+
+        $item = $this->itemRepository->findOneById((int)$id);
+        if ($item === null || $item->getUser() !== $this->tokenToUserResolver->resolveUser()) {
+            // Same status for both not found and forbidden to protect against guessing.
+            return $this->buildItemNotFoundResponse();
         }
 
         $this->itemUpdater->updateItem($item, new HiddenString($data));
