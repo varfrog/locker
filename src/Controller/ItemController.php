@@ -8,6 +8,7 @@ use App\Entity\Item;
 use App\Entity\User;
 use App\Repository\ItemRepository;
 use App\Service\DecryptingItemSerializer;
+use App\Service\FormDataParser;
 use App\Service\ItemFactory;
 use App\Service\ItemUpdater;
 use App\Service\TokenToUserResolver;
@@ -26,7 +27,8 @@ class ItemController
         private TokenToUserResolver $tokenToUserResolver,
         private ItemFactory $itemFactory,
         private DecryptingItemSerializer $decryptingItemSerializer,
-        private ItemUpdater $itemUpdater
+        private ItemUpdater $itemUpdater,
+        private FormDataParser $formDataParser
     ) {
     }
 
@@ -71,23 +73,25 @@ class ItemController
 
     public function update(Request $request)
     {
-        $id = $request->get('id');
-        if ($id === null) {
-            return new JsonResponse(['error' => 'No id parameter']);
+        // Too much logic in the controller, refactor.
+
+        $itemData = $this->formDataParser->parse($request->getContent());
+
+        if (!isset($itemData['id'])) {
+            return new JsonResponse(['error' => 'Form invalid: id not found']);
         }
 
-        $data = $request->get('data');
-        if ($data === null) {
-            return $this->buildMissingDataResponse();
+        if (!isset($itemData['data'])) {
+            return new JsonResponse(['error' => 'Form invalid: data not found']);
         }
 
-        $item = $this->itemRepository->findOneById((int)$id);
+        $item = $this->itemRepository->findOneById((int)$itemData['id']);
         if ($item === null || $item->getUser() !== $this->tokenToUserResolver->resolveUser()) {
             // Same status for both not found and forbidden to protect against guessing.
             return $this->buildItemNotFoundResponse();
         }
 
-        $this->itemUpdater->updateItem($item, new HiddenString($data));
+        $this->itemUpdater->updateItem($item, new HiddenString($itemData['data']));
         $this->objectManager->flush();
 
         return $this->buildItemResponse($item);

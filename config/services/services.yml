@@ -36,3 +36,6 @@ services:
         class: App\Service\ItemUpdater
         arguments:
             - '@app.service.crypter'
+
+    app.service.form_data_parser:
+        class: App\Service\FormDataParser

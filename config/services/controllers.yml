@@ -8,6 +8,7 @@ services:
             - '@app.service.item_factory'
             - '@app.service.decrypting_item_serializer'
             - '@app.service.item_updater'
+            - '@app.service.form_data_parser'
         public: true
 
     app.controller.security_controller:
