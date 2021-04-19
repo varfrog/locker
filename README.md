@@ -2,7 +2,23 @@
 
 ## About
 
-A CRUD API for securely storing strings. It uses Halite which is based on Sodium. The algorithm of encryption is xsalsa20, see `\ParagonIE\Halite\Symmetric\Crypto::encrypt`.
+A CRUD API for securely storing strings. It uses Halite which is based on Sodium. The algorithm of encryption is xsalsa20, see `\ParagonIE\Halite\Symmetric\Crypto::encrypt`. This is a job test task. The task is described below (copy-pasted from the original task description):
+
+```
+The API is down and our customer support team is receiving a storm of complaints, especially on Reddit. You're the only guy who can solve this problem. Here's what you have to do to fix the situation:
+
+* First of all - make API work (also, fix tests);
+* Add item update endpoint - it should update user's item;
+* Make it secure - users are keeping important, sensitive information in our secure storage, so it all depends on you;
+* Make it fast - API is getting millions of requests every day;
+* Refactor to make the code neat and clean - this will keep your teammates happy; 
+* Add more tests;
+* Make sure to keep a simple documentation for endpoints. Updating README.md is more than enough;
+* Don't make any changes to requests and responses, because there are already a lot of clients using API and we wouldn't want to ruin anything, right?
+* Use git, so that we can see your progress
+```
+
+## Security
 
 The principles of security are as follows:
 - The only places where the sensitive data (`Item::$data`) is unencrypted is in the entry points - where we receive it from the user, and when we return it to the user;
@@ -116,7 +132,7 @@ Request is in form-data form and the response is the Item JSON object.
 
 PUT `/item`
 
-Contant
+This method uses form-data, not JSON.
 
 ### Logout
 
