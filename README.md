@@ -1,22 +1,8 @@
-# Secure Information Storage REST API
+# A Symfony REST proof-of-concept API to test data encryption on the backend
 
 ## About
 
-A CRUD API for securely storing strings. It uses Halite which is based on Sodium. The algorithm of encryption is xsalsa20, see `\ParagonIE\Halite\Symmetric\Crypto::encrypt`. This is a job test task. The task is described below (copy-pasted from the original task description):
-
-```
-The API is down and our customer support team is receiving a storm of complaints, especially on Reddit. You're the only guy who can solve this problem. Here's what you have to do to fix the situation:
-
-* First of all - make API work (also, fix tests);
-* Add item update endpoint - it should update user's item;
-* Make it secure - users are keeping important, sensitive information in our secure storage, so it all depends on you;
-* Make it fast - API is getting millions of requests every day;
-* Refactor to make the code neat and clean - this will keep your teammates happy; 
-* Add more tests;
-* Make sure to keep a simple documentation for endpoints. Updating README.md is more than enough;
-* Don't make any changes to requests and responses, because there are already a lot of clients using API and we wouldn't want to ruin anything, right?
-* Use git, so that we can see your progress
-```
+This project provides a a CRUD REST API for securely storing strings. It uses Halite which is based on Sodium. The algorithm of encryption is xsalsa20, see `\ParagonIE\Halite\Symmetric\Crypto::encrypt`.
 
 ## Security
 
@@ -150,19 +136,13 @@ No custom response is made - you will see the default Symfony welcome HTML page.
 
 ### Project setup
 
-* Add `secure-storage.localhost` to your `/etc/hosts`: `127.0.0.1 secure-storage.localhost`
-
+* Add `secure-storage.localhost` to `/etc/hosts`: `127.0.0.1 secure-storage.localhost`
 * Run `make init` to initialize the project
 
 ### Run tests
 
 make tests
 
-### API credentials
-
-* User: john
-* Password: maxsecure
-
 ### Postman requests collection
 
-You can import all available API calls to Postman using `postman_collection.json` file
+See `postman_collection.json`
